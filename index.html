@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Analyzer & Auditor</title>
+    <!-- Modern Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- PDF.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <!-- Tesseract.js CDN (Client-Side OCR) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+    <!-- Application Logic -->
+    <script src="app.js" defer></script>
+</head>
+<body class="theme-dark-yellow">
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <img src="logo.jpg" alt="Meetingselect Logo" class="logo-image">
+                <div>
+                    <h1>Meetingselect Invoice Analyzer for commission</h1>
+                    <p class="subtitle">Extract, search, and audit invoice items securely in your browser</p>
+                </div>
+            </div>
+            <div class="header-controls">
+                <button id="themeToggleBtn" class="btn btn-secondary theme-toggle-btn" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-circle-half-stroke"></i> Toggle Theme
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Body Grid -->
+        <main class="app-main">
+            
+            <!-- Left Column: Upload and Security Info -->
+            <section class="card upload-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-cloud-arrow-up"></i> Upload Invoice</h2>
+                </div>
+                
+                <div id="dropzone" class="dropzone">
+                    <input type="file" id="fileInput" accept="application/pdf" class="file-input">
+                    <div class="dropzone-content">
+                        <i class="fa-solid fa-file-pdf pdf-upload-icon"></i>
+                        <p class="dropzone-text">Drag & drop invoice PDF here or <span>browse files</span></p>
+                        <p class="dropzone-subtext">Supports text-based and scanned PDFs (OCR runs in-browser)</p>
+                    </div>
+                </div>
+
+                <!-- File Info and Extraction Progress -->
+                <div id="fileStatusContainer" class="file-status-container hidden">
+                    <div class="file-meta">
+                        <i class="fa-solid fa-file-lines text-accent"></i>
+                        <span id="fileNameDisplay" class="file-name">invoice.pdf</span>
+                        <span id="fileSizeDisplay" class="file-size">0 KB</span>
+                    </div>
+                    
+                    <div id="progressIndicator" class="progress-indicator hidden">
+                        <div class="progress-bar-container">
+                            <div id="progressBar" class="progress-bar"></div>
+                        </div>
+                        <p id="progressText" class="progress-text">Processing PDF text...</p>
+                    </div>
+
+                    <!-- Auto-delete countdown timer -->
+                    <div id="securityTimer" class="security-timer hidden">
+                        <div class="timer-badge">
+                            <i class="fa-solid fa-shield-halved text-shield"></i>
+                            <span>Auto-deleting data in: <strong id="countdownDisplay">20:00</strong></span>
+                        </div>
+                        <button id="clearDataBtn" class="btn btn-danger btn-sm" title="Delete current data and start over">
+                            <i class="fa-solid fa-trash-can"></i> Delete Now
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Audit Terms & Parameters -->
+            <section class="card search-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-magnifying-glass"></i> Audit Parameters</h2>
+                </div>
+                
+                <div class="search-management">
+                    <p class="section-desc">Add key descriptions or billing terms you want to search and sum within this invoice.</p>
+                    
+                    <div id="searchTermsList" class="search-terms-list">
+                        <!-- Term inputs will be generated dynamically here -->
+                        <div class="term-input-row">
+                            <input type="text" placeholder="e.g. Night Stay, Room, Package Charge, Logies" class="term-input">
+                            <button class="btn-remove-term" onclick="this.parentElement.remove()" title="Remove term">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="search-actions">
+                        <button id="addTermBtn" class="btn btn-secondary btn-sm">
+                            <i class="fa-solid fa-plus"></i> Add Term
+                        </button>
+                        <button id="searchBtn" class="btn btn-primary" disabled>
+                            <i class="fa-solid fa-calculator"></i> Analyze
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bottom Section: Results Container (Spans Full Width) -->
+            <section id="resultsSection" class="results-container hidden"></section>
+        </main>
+        
+        <!-- Premium Footer -->
+        <footer class="app-footer-bar">
+            <p>Built with <i class="fa-solid fa-heart footer-heart"></i> by <strong>Saksham Setia</strong></p>
+        </footer>
+    </div>
+</body>
+</html>
