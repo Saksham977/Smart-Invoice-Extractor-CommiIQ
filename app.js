@@ -348,7 +348,7 @@ function reconstructInvoiceLines(lines) {
         const details = parseAmountAndVat(cleanForAmt);
 
         if (currentItem) {
-            // ✅ Merge A: date line without amount, next line has amount
+            //  Merge A: date line without amount, next line has amount
             if (currentItem.Date && !currentItem.BaseAmount && details.baseAmount) {
                 currentItem.RowText += " | " + line;
                 currentItem.BaseAmount = details.baseAmount;
@@ -753,7 +753,7 @@ const rows = reconstructInvoiceLines(ocrLines);
         }
     });
 
-    // ✅ currency fallback
+    //  currency fallback
     if (!appState.currencySymbol) {
         const detected = safeDetectCurrency([ocrText]);
         if (detected) appState.currencySymbol = detected;
@@ -772,10 +772,10 @@ const rows = reconstructInvoiceLines(ocrLines);
 
         const results = await Promise.all(jobs);
 
-// ✅ FIX ORDER
+//  FIX ORDER
 results.sort((a, b) => a.pageNum - b.pageNum);
 
-// ✅ THEN PUSH
+//  THEN PUSH
 results.forEach(r => {
     appState.extractedRows.push(...r.rows);
 });
