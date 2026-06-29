@@ -1263,7 +1263,7 @@ function executeAuditSearch() {
     DOM.resultsSection.innerHTML = '';
     DOM.resultsSection.classList.remove('hidden');
     terms.forEach(t => renderTermCard(t,
-        appState.extractedRows.filter(r => new RegExp(escapeRegExp(t),'gi').test(r.RowText))
+        appState.extractedRows.filter(r => new RegExp(escapeRegExp(t),'i').test(r.RowText))
     ));
     DOM.resultsSection.scrollIntoView({ behavior:'smooth' });
 }
