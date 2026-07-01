@@ -1,9 +1,9 @@
 // Configure PDF.js Worker
 pdfjsLib.GlobalWorkerOptions.workerSrc =
 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-// ==========================
+// ==========================================
 // Application State
-// ==========================
+// ==========================================
 let appState = {
     extractedRows: [],
     countdownSeconds: 1260,
@@ -755,23 +755,17 @@ function reconstructInvoiceLinesText(lines) {
     return rows;
 }
 
-// ==========================================
+// ===========================
 // OCR Word-Level Correction
 //
 // Tesseract occasionally misreads specific characters within a known word
 // due to font/scan artifacts (e.g. "b" read as "h" at low DPI: "Ontbijt"
 // becomes "Onthijt"). This is different from the digit-confusion fixes in
-// parseAmountAndVat — those fix numbers, this fixes recurring whole-word
-// misreads in descriptions, which matters because search terms need to
-// match the description text exactly (e.g. searching "Ontbijt" must catch
-// every row, not just the ones OCR happened to read correctly).
-//
-// Kept as a small, explicit list rather than a fuzzy/edit-distance pass,
-// so it only ever corrects known, observed misreadings and never risks
-// silently rewriting unrelated text.
-// ==========================================
+// parseAmountAndVat.
+// ============================
 const OCR_WORD_CORRECTIONS = [
-    [/\bOnthijt\b/gi, 'Ontbijt'] // "b" misread as "h" — observed on Van der Valk invoices
+    [/\bOnthijt\b/gi, 'Ontbijt'], // "b" misread as "h"
+    [/\bBanqguet\b/gi, 'Banquet'] //Banquet wrong read
 ];
 
 function applyOcrWordCorrections(text) {
@@ -935,6 +929,17 @@ if (!appState.currencySymbol && allRawText.length > 0) {
 
                         const ocrText = applyOcrWordCorrections(result.data.text);
                         allRawText += ocrText + ' ';
+
+                        //Hit and Try for Banquet:)
+                        // ── DEBUG: log raw OCR for pages containing target terms ──
+                        // Remove this block once the missing-row bug is diagnosed.
+                        if (/banquet/i.test(ocrText)) {
+                            console.group(`🔍 OCR DEBUG — Page ${job.pageNum}`);
+                            console.log('RAW OCR TEXT:\n' + ocrText);
+                            console.log('LINES ARRAY:', ocrText.split('\n').map((l,i) => `[${i}] ${JSON.stringify(l)}`).join('\n'));
+                            console.groupEnd();
+                        }
+                        // ── END DEBUG ──
 
                         // Stitch orphan amount-only lines onto their date line
                         let ocrLines = ocrText.split('\n');
@@ -1270,10 +1275,9 @@ function executeAuditSearch() {
 
 function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 
-// ==========================================
+// =====================
 // Render Result Card
-// ==========================================
-// ==========================================
+// =====================
 // Excel Export — per search term
 // Produces a clean .xlsx with one row per matched line item:
 // Page, Date, Description, VAT %, Base (Excl. VAT), VAT Amount, Gross (Incl. VAT)
